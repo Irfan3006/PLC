@@ -20,7 +20,7 @@
 
     <script>
       tailwind.config = {
-        darkMode: "class",
+        darkMode: "class", 
         theme: {
           extend: {
             fontFamily: {
@@ -29,11 +29,14 @@
             },
             colors: {
               gray: {
-                850: "#1f2937",
+                50: "#f9fafb",
+                800: "#1f2937",
+                850: "#1f2937", 
                 900: "#111827",
-                950: "#0B0F19",
+                950: "#0B0F19", 
               },
               violet: {
+                50: "#f5f3ff",
                 500: "#8b5cf6",
                 600: "#7c3aed",
                 900: "#4c1d95",
@@ -45,24 +48,40 @@
     </script>
 
     <style>
-      body {
-        background-color: #050505;
-        color: #e5e7eb;
+      /* Transisi halus saat ganti tema */
+      body,
+      main,
+      div,
+      button,
+      textarea,
+      section {
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
       }
+
       /* Custom scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
       }
       ::-webkit-scrollbar-track {
+        background: #f3f4f6;
+      }
+      .dark ::-webkit-scrollbar-track {
         background: #111827;
       }
       ::-webkit-scrollbar-thumb {
-        background: #374151;
+        background: #d1d5db;
         border-radius: 4px;
       }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #374151;
+      }
       ::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
         background: #4b5563;
       }
+
       textarea:focus,
       button:focus {
         outline: none;
@@ -70,37 +89,52 @@
     </style>
   </head>
 
-  <body class="min-h-screen flex justify-center py-12 px-4 selection:bg-violet-600 selection:text-white">
-    <div class="fixed top-[-20%] left-[-10%] w-[40%] h-[40%] bg-violet-900/20 blur-[120px] rounded-full pointer-events-none"></div>
-    <div class="fixed bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-violet-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+  <body
+    class="min-h-screen flex justify-center py-12 px-4 selection:bg-violet-200 selection:text-violet-900 dark:selection:bg-violet-600 dark:selection:text-white bg-gray-50 dark:bg-[#050505] text-gray-900 dark:text-gray-200 transition-colors duration-300"
+  >
+    <div
+      class="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-violet-200/40 dark:bg-violet-900/20 blur-[100px] rounded-full pointer-events-none"
+    ></div>
+    <div
+      class="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-200/40 dark:bg-violet-600/10 blur-[100px] rounded-full pointer-events-none"
+    ></div>
 
     <div class="w-full max-w-2xl space-y-6 z-10 relative">
-      <main class="bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden">
-        <div class="px-8 py-6 border-b border-gray-800 flex items-center justify-between bg-gray-900/50 backdrop-blur-sm">
+      <div class="flex justify-end mb-2"></div>
+
+      <main class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        <div
+          class="px-8 py-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm"
+        >
           <div class="flex items-center gap-3">
-            <div class="p-2 bg-gray-800 rounded-lg border border-gray-700">
-              <span class="material-icons-round text-violet-500 text-xl">enhanced_encryption</span>
+            <div class="p-2 bg-violet-50 dark:bg-gray-800 rounded-lg border border-violet-100 dark:border-gray-700">
+              <span class="material-icons-round text-violet-600 dark:text-violet-500 text-xl">enhanced_encryption</span>
             </div>
             <div>
-              <h1 class="font-semibold text-white tracking-tight">Encryption Tool</h1>
-              <p class="text-xs text-gray-500 font-mono">Algorithm: Programming Language Cryptography</p>
+              <h1 class="font-bold text-gray-900 dark:text-white tracking-tight">Encryption Tool</h1>
+              <p class="text-xs text-gray-500 dark:text-gray-500 font-mono">Algorithm: Programming Language Cryptography</p>
             </div>
           </div>
-          <div class="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+          <button
+            onclick="toggleTheme()"
+            class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-xs font-semibold text-gray-600 dark:text-gray-300 transition-all"
+          >
+            <span id="theme-icon" class="material-icons-round text-sm">light_mode</span>
+          </button>
         </div>
 
-        <div class="flex p-2 gap-2 bg-gray-950/30">
+        <div class="flex p-2 gap-2 bg-gray-50 dark:bg-gray-950/30 border-b border-gray-100 dark:border-transparent">
           <button
             onclick="setMode('encrypt')"
             id="btn-encrypt"
-            class="flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gray-800 text-white border border-gray-700 shadow-lg"
+            class="flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-white dark:bg-gray-800 text-violet-700 dark:text-white border border-gray-200 dark:border-gray-700 shadow-sm"
           >
             <span class="material-icons-round text-sm">lock</span> Encrypt
           </button>
           <button
             onclick="setMode('decrypt')"
             id="btn-decrypt"
-            class="flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
+            class="flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800/50"
           >
             <span class="material-icons-round text-sm">no_encryption</span> Decrypt
           </button>
@@ -108,21 +142,21 @@
 
         <div class="p-8 space-y-6">
           <div class="space-y-2">
-            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Input Data</label>
+            <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider ml-1">Input Data</label>
             <div class="relative group">
               <textarea
                 id="inputText"
                 rows="5"
-                class="w-full bg-gray-950 text-gray-300 rounded-xl p-4 font-mono text-sm border border-gray-800 focus:border-violet-600 focus:ring-1 focus:ring-violet-600 transition-all placeholder-gray-600 resize-none"
+                class="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-300 rounded-xl p-4 font-mono text-sm border border-gray-200 dark:border-gray-800 focus:border-violet-500 dark:focus:border-violet-600 focus:ring-4 focus:ring-violet-500/10 dark:focus:ring-1 dark:focus:ring-violet-600 transition-all placeholder-gray-400 dark:placeholder-gray-600 resize-none shadow-sm dark:shadow-none"
                 placeholder="Enter plaintext message here..."
               ></textarea>
-              <div class="absolute bottom-3 right-3 text-gray-600 text-[10px] font-mono select-none">UTF-8</div>
+              <div class="absolute bottom-3 right-3 text-gray-400 dark:text-gray-600 text-[10px] font-mono select-none">UTF-8</div>
             </div>
           </div>
 
           <button
             onclick="processText()"
-            class="w-full py-3.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-medium shadow-[0_4px_20px_-5px_rgba(124,58,237,0.4)] transition-all active:scale-[0.99] flex items-center justify-center gap-2"
+            class="w-full py-3.5 bg-violet-600 hover:bg-violet-700 dark:hover:bg-violet-500 text-white rounded-xl font-medium shadow-lg shadow-violet-600/20 dark:shadow-[0_4px_20px_-5px_rgba(124,58,237,0.4)] transition-all active:scale-[0.99] flex items-center justify-center gap-2"
           >
             <span id="action-icon" class="material-icons-round">bolt</span>
             <span id="action-text">Run Encryption Process</span>
@@ -130,8 +164,11 @@
 
           <div class="space-y-2 pt-2">
             <div class="flex items-center justify-between">
-              <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Output Result</label>
-              <button onclick="copyToClipboard()" class="text-xs flex items-center gap-1 text-violet-400 hover:text-violet-300 transition-colors">
+              <label class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider ml-1">Output Result</label>
+              <button
+                onclick="copyToClipboard()"
+                class="text-xs flex items-center gap-1 text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 transition-colors font-medium"
+              >
                 <span class="material-icons-round text-[14px]">content_copy</span> Copy
               </button>
             </div>
@@ -140,29 +177,43 @@
               <textarea
                 id="outputText"
                 readonly
-                class="w-full bg-gray-800/50 text-violet-200 rounded-xl p-4 font-mono text-sm border border-gray-800 focus:border-gray-700 transition-all cursor-text min-h-[100px]"
+                class="w-full bg-violet-50 dark:bg-gray-800/50 text-violet-900 dark:text-violet-200 rounded-xl p-4 font-mono text-sm border border-violet-100 dark:border-gray-800 focus:border-violet-200 dark:focus:border-gray-700 transition-all cursor-text min-h-[100px]"
                 placeholder="Result will appear here..."
               ></textarea>
             </div>
           </div>
-          <div class="px-6 py-4 bg-gray-900 border border-gray-800 rounded-xl flex justify-between items-center text-[10px] text-gray-500 font-mono">
-            <span class="flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+
+          <div
+            class="px-5 py-3 bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-xl flex justify-between items-center text-[10px] text-gray-500 font-mono"
+          >
+            <span class="flex items-center gap-1.5">
+              <span class="material-icons-round text-[12px] text-gray-400 dark:text-green-500 dark:animate-pulse">shield</span>
               SECURE CONNECTION
             </span>
-            <a href="https://irfan-syarifudin.vercel.app/" target="_blank" class="hover:text-violet-400 transition-colors flex items-center gap-1">
+            <a
+              href="https://irfan-syarifudin.vercel.app/"
+              target="_blank"
+              class="hover:text-violet-600 dark:hover:text-violet-400 transition-colors flex items-center gap-1 font-medium"
+            >
               Created by Irfan Syarifudin <span class="material-icons-round text-[10px]">open_in_new</span>
             </a>
           </div>
         </div>
       </main>
 
-      <section class="bg-gray-900 border border-gray-800 rounded-2xl shadow-xl overflow-hidden p-8 space-y-8">
-        <div class="space-y-2 border-b border-gray-800 pb-6">
-          <h2 class="text-xl font-semibold text-white flex items-center gap-2">
-            <span class="material-icons-round text-violet-500">menu_book</span>
-            Tentang Metode PLC
+      <section
+        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg dark:shadow-xl overflow-hidden p-8 space-y-8"
+      >
+        <div class="space-y-2 border-b border-gray-100 dark:border-gray-800 pb-6">
+          <h2 class="flex items-center justify-between text-xl font-bold text-gray-900 dark:text-white">
+            <span class="flex items-center gap-2">
+              <span class="material-icons-round text-violet-600 dark:text-violet-500">menu_book</span>
+              Tentang Metode PLC
+            </span>
+
+            <span class="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
           </h2>
+
           <p class="text-gray-400 text-sm leading-relaxed">
             <strong class="text-violet-400">Programming Language Cryptography (PLC)</strong> adalah metode kriptografi yang memanfaatkan bahasa
             pemrograman sebagai basis kunci enkripsi. Metode ini menggabungkan unsur linguistik, transformasi numerik, dan manipulasi urutan untuk
@@ -225,40 +276,42 @@
         </div>
 
         <div class="space-y-4 pt-2">
-          <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Contoh Implementasi (Python)</h3>
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider transition-colors duration-300">Contoh Implementasi (Python)</h3>
 
-          <div class="bg-gray-950 border border-gray-800 rounded-xl p-5 font-mono text-sm overflow-x-auto">
-            <div class="grid grid-cols-[100px_1fr] gap-y-2 text-gray-400">
-              <span class="text-gray-500">Huruf:</span>
-              <span class="text-violet-300">P</span>
+          <div class="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl p-5 font-mono text-sm overflow-x-auto shadow-inner dark:shadow-none transition-colors duration-300">
+            <div class="grid grid-cols-[100px_1fr] gap-y-2 text-gray-600 dark:text-gray-400 transition-colors duration-300">
+              <span class="text-gray-400 dark:text-gray-500">Huruf:</span>
+              <span class="text-violet-700 dark:text-violet-300 font-bold">P</span>
 
-              <span class="text-gray-500">Bahasa:</span>
-              <span class="">Python</span>
+              <span class="text-gray-400 dark:text-gray-500">Bahasa:</span>
+              <span class="text-gray-800 dark:text-white">Python</span>
 
-              <span class="text-gray-500">Suffix:</span>
-              <span>on <span class="text-gray-600 text-xs">(2 huruf terakhir)</span></span>
+              <span class="text-gray-400 dark:text-gray-500">Suffix:</span>
+              <span>on <span class="text-gray-400 dark:text-gray-600 text-xs">(2 huruf terakhir)</span></span>
 
-              <span class="text-gray-500">Tahun:</span>
-              <span>1989 <span class="text-gray-600">→</span> 1989³ = <span class="text-violet-400">7,868,724,669</span></span>
+              <span class="text-gray-400 dark:text-gray-500">Tahun:</span>
+              <span>1989 <span class="text-gray-400 dark:text-gray-600">→</span> 1989³ = <span class="text-violet-600 dark:text-violet-400">7,868,724,669</span></span>
 
-              <span class="text-gray-500">Penemu:</span>
-              <span>Guido van Rossum <span class="text-gray-600">→</span> <span class="text-violet-400">gvr</span></span>
+              <span class="text-gray-400 dark:text-gray-500">Penemu:</span>
+              <span>Guido van Rossum <span class="text-gray-400 dark:text-gray-600">→</span> <span class="text-violet-600 dark:text-violet-400">gvr</span></span>
 
-              <div class="col-span-2 h-px bg-gray-800 my-1"></div>
+              <div class="col-span-2 h-px bg-gray-200 dark:bg-gray-800 my-1 transition-colors duration-300"></div>
 
-              <span class="text-gray-500">Gabungan:</span>
-              <span class="text-gray-300">on7868724669gvr</span>
+              <span class="text-gray-400 dark:text-gray-500">Gabungan:</span>
+              <span class="text-gray-800 dark:text-gray-300">on7868724669gvr</span>
 
-              <span class="text-gray-500">Proses:</span>
-              <span class="text-orange-400 italic">Dibalik (Reverse)</span>
+              <span class="text-gray-400 dark:text-gray-500">Proses:</span>
+              <span class="text-orange-500 dark:text-orange-400 italic">Dibalik (Reverse)</span>
             </div>
 
-            <div class="mt-4 pt-4 border-t border-gray-800 flex items-center gap-3">
+            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 flex items-center gap-3 transition-colors duration-300">
               <span class="text-gray-500 font-semibold">HASIL AKHIR:</span>
-              <span class="bg-violet-900/30 text-violet-200 px-2 py-1 rounded border border-violet-500/30 tracking-wide select-all"
+              <span class="bg-white dark:bg-violet-900/30 text-violet-700 dark:text-violet-200 px-2 py-1 rounded border border-gray-200 dark:border-violet-500/30 tracking-wide select-all shadow-sm dark:shadow-none transition-colors duration-300"
                 >rvg9664278687no</span
               >
             </div>
+          </div>
+        </div>
           </div>
         </div>
       </section>
@@ -267,28 +320,68 @@
     <script>
       let currentMode = "encrypt";
 
-      function setMode(mode) {
-        currentMode = mode;
+      
+      function toggleTheme() {
+        const html = document.documentElement;
+        const themeIcon = document.getElementById("theme-icon");
+        const themeText = document.getElementById("theme-text");
+
+        if (html.classList.contains("dark")) {
+          html.classList.remove("dark");
+          themeIcon.innerText = "dark_mode"; 
+          themeText.innerText = "Dark Mode"; 
+          localStorage.setItem("theme", "light");
+        } else {
+          html.classList.add("dark");
+          themeIcon.innerText = "light_mode"; 
+          themeText.innerText = "Light Mode"; 
+          localStorage.setItem("theme", "dark");
+        }
+
+        
+        updateButtonStyles();
+      }
+
+      function updateButtonStyles() {
         const btnEncrypt = document.getElementById("btn-encrypt");
         const btnDecrypt = document.getElementById("btn-decrypt");
-        const actionText = document.getElementById("action-text");
-        const inputField = document.getElementById("inputText");
+        const html = document.documentElement;
+        const isDark = html.classList.contains("dark");
 
-        const activeClass = "bg-gray-800 text-white border border-gray-700 shadow-lg";
-        const inactiveClass = "text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 border border-transparent";
+        
+        const activeClassLight = "bg-white text-violet-700 border border-gray-200 shadow-sm ring-1 ring-violet-100";
+        const inactiveClassLight = "text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent";
 
-        if (mode === "encrypt") {
+        const activeClassDark = "bg-gray-800 text-white border border-gray-700 shadow-lg";
+        const inactiveClassDark = "text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 border border-transparent";
+
+        const activeClass = isDark ? activeClassDark : activeClassLight;
+        const inactiveClass = isDark ? inactiveClassDark : inactiveClassLight;
+
+        if (currentMode === "encrypt") {
           btnEncrypt.className =
             "flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 " + activeClass;
           btnDecrypt.className =
             "flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 " + inactiveClass;
-          actionText.innerText = "Run Encryption Process";
-          inputField.placeholder = "Enter plaintext message here...";
         } else {
           btnEncrypt.className =
             "flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 " + inactiveClass;
           btnDecrypt.className =
             "flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 " + activeClass;
+        }
+      }
+
+      function setMode(mode) {
+        currentMode = mode;
+        const actionText = document.getElementById("action-text");
+        const inputField = document.getElementById("inputText");
+
+        updateButtonStyles();
+
+        if (mode === "encrypt") {
+          actionText.innerText = "Run Encryption Process";
+          inputField.placeholder = "Enter plaintext message here...";
+        } else {
           actionText.innerText = "Run Decryption Process";
           inputField.placeholder = "Paste encrypted string here...";
         }
@@ -332,6 +425,26 @@
           btnCopy.innerHTML = originalText;
         }, 1500);
       }
+
+      
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem("theme");
+        const themeIcon = document.getElementById("theme-icon");
+        const themeText = document.getElementById("theme-text");
+
+        
+        if (savedTheme === "light") {
+          document.documentElement.classList.remove("dark");
+          themeIcon.innerText = "dark_mode";
+          themeText.innerText = "Dark Mode";
+        } else {
+          
+          document.documentElement.classList.add("dark");
+          themeIcon.innerText = "light_mode";
+          themeText.innerText = "Light Mode";
+        }
+        updateButtonStyles();
+      });
     </script>
   </body>
 </html>

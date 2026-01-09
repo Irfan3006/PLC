@@ -1,9 +1,5 @@
-from flask import Flask, render_template, request, jsonify, abort
+from flask import Flask, render_template, request, jsonify
 import os
-
-
-if os.getenv("MAINTENANCE_MODE") == "true":
-    abort(503)
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 

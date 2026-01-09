@@ -111,7 +111,7 @@ Metode **Programming Language Cryptography (PLC)** **tidak ditujukan untuk siste
 
 **Irfan Syarifudin**
 Mahasiswa Teknik Komputer
-Minat: Cyber Security & Kriptografi 🔐🚀
+Minat: Cyber Security & Kriptografi
 
 ---
 

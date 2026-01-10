@@ -304,7 +304,6 @@
     <script>
       let currentMode = "encrypt";
 
-      // --- SweetAlert Toast Mixin (Untuk Notifikasi Kecil) ---
       const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -321,7 +320,6 @@
         const html = document.documentElement;
         const themeIcon = document.getElementById("theme-icon");
         
-        // Simpan tema yang aktif
         let newTheme;
         if (html.classList.contains("dark")) {
           html.classList.remove("dark");

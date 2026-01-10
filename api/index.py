@@ -102,5 +102,5 @@ def ratelimit_handler(e):
 def request_entity_too_large(e):
     return jsonify({'error': 'Data yang dikirim terlalu besar'}), 413
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)

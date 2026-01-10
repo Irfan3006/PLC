@@ -1,7 +1,18 @@
 from flask import Flask, render_template, request, jsonify
-import os
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import logging
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
+
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
 
 mapping = {
     "A": "da778688000ji", "B": "ic7575729344jktk", "C": "c7668682048dr", "D": "hi7940149875ah",
@@ -29,33 +40,26 @@ def run_encrypt(text):
     return ciphertext[::-1]
 
 def run_decrypt(ciphertext):
-    
+    if not ciphertext: return ""
     ciphertext = ciphertext[::-1].lower() 
     result = []
     i = 0
+    max_len = len(ciphertext)
     
-    max_iter = len(ciphertext) * 2
-    count = 0
-
-    while i < len(ciphertext):
+    while i < max_len:
         match = False
-        count += 1
-        if count > max_iter: break 
-
+        current_segment = ciphertext[i:] 
         for code, letter in reverse_mapping.items():
-            if ciphertext.startswith(code, i):
+            if current_segment.startswith(code):
                 result.append(letter)
                 i += len(code)
                 match = True
                 break
-        
         if not match:
-            
             i += 1 
             
     if not result:
         return "Tidak ditemukan pola yang cocok"
-        
     return "".join(result)
 
 @app.route('/')
@@ -63,20 +67,40 @@ def home():
     return render_template('index.html')
 
 @app.route('/process', methods=['POST'])
+@limiter.limit("10 per minute")
 def process():
-    data = request.json
-    text = data.get('text', '')
-    mode = data.get('mode', 'encrypt')
-    
-    if not text:
-        return jsonify({'result': ''})
+    try:
+        data = request.json
+        if not data:
+             return jsonify({'error': 'No data provided'}), 400
 
-    if mode == 'encrypt':
-        result = run_encrypt(text)
-    else:
-        result = run_decrypt(text)
+        text = data.get('text', '')
+        mode = data.get('mode', 'encrypt')
         
-    return jsonify({'result': result})
+        if len(text) > 5000: 
+            return jsonify({'error': 'Teks terlalu panjang. Maksimal 5000 karakter.'}), 413
 
-if __name__ == '__main__':
-    app.run(debug=True)
+        if not text:
+            return jsonify({'result': ''})
+
+        if mode == 'encrypt':
+            result = run_encrypt(text)
+        else:
+            result = run_decrypt(text)
+            
+        return jsonify({'result': result})
+
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        return jsonify({'error': 'Terjadi kesalahan internal'}), 500
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({'error': 'Terlalu banyak permintaan. Silakan coba lagi nanti.'}), 429
+    
+@app.errorhandler(413)
+def request_entity_too_large(e):
+    return jsonify({'error': 'Data yang dikirim terlalu besar'}), 413
+
+# if __name__ == '__main__':
+#     app.run(debug=True)

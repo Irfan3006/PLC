@@ -17,6 +17,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
 
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
       tailwind.config = {
@@ -49,43 +51,27 @@
 
     <style>
       /* Transisi halus saat ganti tema */
-      body,
-      main,
-      div,
-      button,
-      textarea,
-      section {
+      body, main, div, button, textarea, section {
         transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
       }
 
       /* Custom scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #f3f4f6;
-      }
-      .dark ::-webkit-scrollbar-track {
-        background: #111827;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #d1d5db;
-        border-radius: 4px;
-      }
-      .dark ::-webkit-scrollbar-thumb {
-        background: #374151;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #9ca3af;
-      }
-      .dark ::-webkit-scrollbar-thumb:hover {
-        background: #4b5563;
-      }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #f3f4f6; }
+      .dark ::-webkit-scrollbar-track { background: #111827; }
+      ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+      .dark ::-webkit-scrollbar-thumb { background: #374151; }
+      ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+      .dark ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
 
-      textarea:focus,
-      button:focus {
-        outline: none;
+      textarea:focus, button:focus { outline: none; }
+      
+      /* SweetAlert Dark Mode Override (Optional tweak) */
+      .dark .swal2-popup {
+        background: #1f2937 !important;
+        color: #e5e7eb !important;
       }
+      .dark .swal2-title { color: #fff !important; }
     </style>
   </head>
 
@@ -312,33 +298,41 @@
             </div>
           </div>
         </div>
-          </div>
-        </div>
       </section>
     </div>
 
     <script>
       let currentMode = "encrypt";
 
-      
+      // --- SweetAlert Toast Mixin (Untuk Notifikasi Kecil) ---
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+
       function toggleTheme() {
         const html = document.documentElement;
         const themeIcon = document.getElementById("theme-icon");
-        const themeText = document.getElementById("theme-text");
-
+        
+        // Simpan tema yang aktif
+        let newTheme;
         if (html.classList.contains("dark")) {
           html.classList.remove("dark");
           themeIcon.innerText = "dark_mode"; 
-          themeText.innerText = "Dark Mode"; 
-          localStorage.setItem("theme", "light");
+          newTheme = "light";
         } else {
           html.classList.add("dark");
           themeIcon.innerText = "light_mode"; 
-          themeText.innerText = "Light Mode"; 
-          localStorage.setItem("theme", "dark");
+          newTheme = "dark";
         }
-
-        
+        localStorage.setItem("theme", newTheme);
         updateButtonStyles();
       }
 
@@ -348,7 +342,6 @@
         const html = document.documentElement;
         const isDark = html.classList.contains("dark");
 
-        
         const activeClassLight = "bg-white text-violet-700 border border-gray-200 shadow-sm ring-1 ring-violet-100";
         const inactiveClassLight = "text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent";
 
@@ -391,7 +384,15 @@
         const text = document.getElementById("inputText").value;
         const outputField = document.getElementById("outputText");
 
-        if (!text) return;
+        if (!text) {
+             Swal.fire({
+                icon: 'warning',
+                title: 'Data Kosong',
+                text: 'Harap masukkan teks terlebih dahulu!',
+                confirmButtonColor: '#7c3aed'
+             });
+             return;
+        }
 
         outputField.value = "Processing...";
 
@@ -403,45 +404,76 @@
           });
 
           const data = await response.json();
+
+          if (response.status === 429) {
+             // Rate Limit Hit
+             Swal.fire({
+                icon: 'error',
+                title: 'Jangan Spam! 👮',
+                text: data.error || 'Terlalu banyak permintaan. Santai dulu sejenak.',
+                confirmButtonColor: '#d33'
+             });
+             outputField.value = "Request Blocked by Security System.";
+             return;
+          }
+
+          if (response.status === 413) {
+             // Payload Too Large
+             Swal.fire({
+                icon: 'error',
+                title: 'Kepanjangan! 📜',
+                text: data.error || 'Teks melebihi batas 5000 karakter.',
+                confirmButtonColor: '#d33'
+             });
+             outputField.value = "Error: Input too large.";
+             return;
+          }
+
+          if (!response.ok) {
+             throw new Error(data.error || 'Server Error');
+          }
+
           outputField.value = data.result;
+
         } catch (error) {
           console.error("Error:", error);
-          outputField.value = "Error: Could not connect to server.";
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal Terhubung',
+            text: 'Terjadi kesalahan saat menghubungi server.',
+            confirmButtonColor: '#d33'
+          });
+          outputField.value = "Connection Error.";
         }
       }
 
       function copyToClipboard() {
         const copyText = document.getElementById("outputText");
-        if (!copyText.value) return;
+        if (!copyText.value || copyText.value === "Processing..." || copyText.value.includes("Error")) {
+             return;
+        }
 
         copyText.select();
         copyText.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(copyText.value);
 
-        const btnCopy = document.querySelector('button[onclick="copyToClipboard()"]');
-        const originalText = btnCopy.innerHTML;
-        btnCopy.innerHTML = '<span class="material-icons-round text-[14px]">check</span> Copied';
-        setTimeout(() => {
-          btnCopy.innerHTML = originalText;
-        }, 1500);
+        Toast.fire({
+          icon: 'success',
+          title: 'Berhasil disalin ke clipboard!'
+        });
       }
 
       
       document.addEventListener("DOMContentLoaded", () => {
         const savedTheme = localStorage.getItem("theme");
         const themeIcon = document.getElementById("theme-icon");
-        const themeText = document.getElementById("theme-text");
-
         
         if (savedTheme === "light") {
           document.documentElement.classList.remove("dark");
           themeIcon.innerText = "dark_mode";
-          themeText.innerText = "Dark Mode";
         } else {
-          
           document.documentElement.classList.add("dark");
           themeIcon.innerText = "light_mode";
-          themeText.innerText = "Light Mode";
         }
         updateButtonStyles();
       });

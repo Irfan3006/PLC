@@ -66,6 +66,11 @@ def run_decrypt(ciphertext):
 def home():
     return render_template('index.html')
 
+@app.route('/robots.txt')
+def robots():
+    return app.send_static_file('robots.txt')
+
+
 @app.route('/process', methods=['POST'])
 @limiter.limit("10 per minute")
 def process():
